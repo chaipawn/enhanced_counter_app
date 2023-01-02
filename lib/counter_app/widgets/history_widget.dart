@@ -1,14 +1,11 @@
+import 'package:enhanced_counter_app/counter_app/widgets/counter_inherited_widget.dart';
 import 'package:flutter/material.dart';
 
 /// This widget keeps track of the counter values whenever it is increased.
 class HistoryWidget extends StatefulWidget {
-  /// The counters history.
-  final List<int> increasesHistory;
-
-  /// Creates an [HistoryWidget] from the given [increasesHistory].
+  /// Creates an [HistoryWidget] widget.
   const HistoryWidget({
     Key? key,
-    required this.increasesHistory,
   }) : super(key: key);
 
   @override
@@ -17,44 +14,10 @@ class HistoryWidget extends StatefulWidget {
 
 /// The state of the [HistoryWidget] widget.
 class _HistoryWidgetState extends State<HistoryWidget> {
-  /// Manually caching the list.
-  late ListView list = buildList();
-
-  /// Building the list.
-  ListView buildList() {
-    return ListView.separated(
-      key: const Key('HistoryWidget-ListView'),
-      scrollDirection: Axis.horizontal,
-      itemCount: widget.increasesHistory.length,
-      itemBuilder: (_, index) {
-        return Card(
-          elevation: 4,
-          shadowColor: Colors.blueAccent,
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: Center(
-              child: Text('${widget.increasesHistory[index]}'),
-            ),
-          ),
-        );
-      },
-      separatorBuilder: (_, __) => const SizedBox(width: 10),
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant HistoryWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.increasesHistory.length != oldWidget.increasesHistory.length) {
-      // Updating the list
-      list = buildList();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final counterState = CounterState.of(context).model;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -70,7 +33,30 @@ class _HistoryWidgetState extends State<HistoryWidget> {
             ),
             child: SizedBox(
               height: 40,
-              child: list,
+              child: AnimatedBuilder(
+                animation: counterState,
+                builder: (context, _) {
+                  return ListView.separated(
+                    key: const Key('HistoryWidget-ListView'),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: counterState.history.length,
+                    itemBuilder: (_, index) {
+                      return Card(
+                        elevation: 4,
+                        shadowColor: Colors.blueAccent,
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Center(
+                            child: Text('${counterState.history[index]}'),
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  );
+                },
+              ),
             ),
           ),
         ),
