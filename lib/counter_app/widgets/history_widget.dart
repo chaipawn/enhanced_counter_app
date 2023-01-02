@@ -17,6 +17,42 @@ class HistoryWidget extends StatefulWidget {
 
 /// The state of the [HistoryWidget] widget.
 class _HistoryWidgetState extends State<HistoryWidget> {
+  /// Manually caching the list.
+  late ListView list = buildList();
+
+  /// Building the list.
+  ListView buildList() {
+    return ListView.separated(
+      key: const Key('HistoryWidget-ListView'),
+      scrollDirection: Axis.horizontal,
+      itemCount: widget.increasesHistory.length,
+      itemBuilder: (_, index) {
+        return Card(
+          elevation: 4,
+          shadowColor: Colors.blueAccent,
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Center(
+              child: Text('${widget.increasesHistory[index]}'),
+            ),
+          ),
+        );
+      },
+      separatorBuilder: (_, __) => const SizedBox(width: 10),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant HistoryWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.increasesHistory.length != oldWidget.increasesHistory.length) {
+      // Updating the list
+      list = buildList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -34,25 +70,7 @@ class _HistoryWidgetState extends State<HistoryWidget> {
             ),
             child: SizedBox(
               height: 40,
-              child: ListView.separated(
-                key: const Key('HistoryWidget-ListView'),
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.increasesHistory.length,
-                itemBuilder: (_, index) {
-                  return Card(
-                    elevation: 4,
-                    shadowColor: Colors.blueAccent,
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Center(
-                        child: Text('${widget.increasesHistory[index]}'),
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-              ),
+              child: list,
             ),
           ),
         ),
