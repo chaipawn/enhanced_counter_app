@@ -14,6 +14,16 @@ class HistoryWidget extends StatefulWidget {
 
 /// The state of the [HistoryWidget] widget.
 class _HistoryWidgetState extends State<HistoryWidget> {
+  /// The [ListView] scroll controller.
+  final controller = ScrollController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final counterState = CounterState.of(context).model;
@@ -36,8 +46,18 @@ class _HistoryWidgetState extends State<HistoryWidget> {
               child: AnimatedBuilder(
                 animation: counterState,
                 builder: (context, _) {
+                  if (counterState.history.isNotEmpty) {
+                    // Moving the scroll controller to the end
+                    controller.animateTo(
+                      controller.position.maxScrollExtent + 50 + 10,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+                  }
+
                   return ListView.separated(
                     key: const Key('HistoryWidget-ListView'),
+                    controller: controller,
                     scrollDirection: Axis.horizontal,
                     itemCount: counterState.history.length,
                     itemBuilder: (_, index) {
